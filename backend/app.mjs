@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApiRouter, HttpError } from './routes.mjs';
 import { requireAuth, requirePageAuth, validateAuthConfig } from './auth.mjs';
+import { query } from './db.mjs';
 
 const backendDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(backendDir, '..');
@@ -19,14 +20,18 @@ export function createApp() {
     res.set('Cache-Control', 'no-store');
     next();
   };
-  app.use('/uploads', noStore, requireAuth, express.static(path.join(backendDir, 'uploads'), {
-    fallthrough: false, cacheControl: false,
-    setHeaders(res) {
-      // Uploaded SVGs must not run scripts with the viewer's session.
-      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-    },
-  }));
+  app.use('/uploads', noStore, requireAuth, (_req, res, next) => {
+    // Uploaded SVGs must not run scripts with the viewer's session.
+    res.set('Content-Security-Policy', "default-src 'none'; sandbox");
+    res.set('X-Content-Type-Options', 'nosniff');
+    next();
+  }, express.static(path.join(backendDir, 'uploads'), { cacheControl: false }));
+  app.get('/uploads/:filename', async (req, res) => {
+    const [image] = await query('SELECT content_type, data FROM shopit.listing_images WHERE filename = $1',
+      [req.params.filename]);
+    if (!image) throw new HttpError(404, 'Filen hittades inte.');
+    res.type(image.content_type).send(image.data);
+  });
 
   // Only the assets needed by the login page are anonymous.
   const publicFiles = new Set([

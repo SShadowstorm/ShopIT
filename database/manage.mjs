@@ -39,8 +39,8 @@ try {
         }
       }
       const files = {
-        migrate: ['001_schema.sql', '005_listing_filters.sql'],
-        upgrade: ['004_unique_school_email.sql', '005_listing_filters.sql'],
+        migrate: ['001_schema.sql', '005_listing_filters.sql', '006_listing_images.sql'],
+        upgrade: ['004_unique_school_email.sql', '005_listing_filters.sql', '006_listing_images.sql'],
         seed: ['002_seed.sql'],
         verify: ['003_verify.sql'],
       }[action];

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NTI-T Shopp</title>
-  <script src="api.js?v=filters"></script>
+  <script src="api.js?v=listing-images"></script>
   <script src="auth.js"></script>
   <!-- Font Awesome Ikoner -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1064,7 +1064,7 @@
         <button class="fav-btn" title="Spara som favorit">
           <i class="fa-regular fa-heart"></i>
         </button>
-        <div class="product-img-wrap"><img src="${NTIT.escapeHTML(listing.image_url || 'images/product-placeholder.svg')}" alt="${NTIT.escapeHTML(listing.title)}" class="product-img" loading="lazy"></div>
+        <div class="product-img-wrap">${NTIT.listingImage(listing.image_url, listing.title, 'product-img', { lazy: true })}</div>
         <div class="product-info">
           <div class="product-meta">
             <span class="product-location"><i class="fa-solid fa-location-dot"></i> ${NTIT.escapeHTML(listing.city || 'Anges senare')}</span>
@@ -1112,7 +1112,7 @@
       if (!listing) return;
 
       productPageContent.innerHTML = `
-        <div class="product-page-img-wrap"><img src="${NTIT.escapeHTML(listing.image_url || 'images/product-placeholder.svg')}" alt="${NTIT.escapeHTML(listing.title)}" class="product-page-img"></div>
+        <div class="product-page-img-wrap">${NTIT.listingImage(listing.image_url, listing.title, 'product-page-img')}</div>
         <div class="product-page-info">
           <div class="product-page-title">${NTIT.escapeHTML(listing.title)}</div>
           <div class="product-page-price">${NTIT.money(listing.price)}</div>
@@ -1239,7 +1239,7 @@
         const itemEl = document.createElement('div');
         itemEl.className = 'cart-item';
         itemEl.innerHTML = `
-          <img src="${NTIT.escapeHTML(item.image || 'images/product-placeholder.svg')}" alt="${NTIT.escapeHTML(item.title)}" class="cart-item-img">
+          ${NTIT.listingImage(item.image, item.title, 'cart-item-img')}
           <div class="cart-item-details">
             <div class="cart-item-title">${NTIT.escapeHTML(item.title)}</div>
             <div class="cart-item-price">${NTIT.money(item.price * item.qty)}</div>

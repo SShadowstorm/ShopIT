@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Min Profil - NTI-T Shopp</title>
-  <script src="api.js?v=filters"></script>
+  <script src="api.js?v=listing-images"></script>
   <script src="auth.js"></script>
   <!-- Font Awesome Ikoner -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1612,7 +1612,7 @@
         card.className = 'listing-card';
         card.innerHTML = `
           <div class="listing-status-badge">${NTIT.escapeHTML(AD_STATUS_LABELS[ad.status] || ad.status)}</div>
-          <div class="listing-img-wrap"><img src="${NTIT.escapeHTML(ad.image_url || 'images/product-placeholder.svg')}" alt="${NTIT.escapeHTML(ad.title)}" class="listing-img"></div>
+          <div class="listing-img-wrap">${NTIT.listingImage(ad.image_url, ad.title, 'listing-img')}</div>
           <div class="listing-body">
             <div class="listing-meta-row">
               <span style="font-size: 0.78rem; color: var(--text-muted);"><i class="fa-solid fa-tag"></i> ${NTIT.escapeHTML(ad.category || 'Övrigt')}</span>
@@ -2007,7 +2007,7 @@
         const itemEl = document.createElement('div');
         itemEl.className = 'cart-item';
         itemEl.innerHTML = `
-          <img src="${NTIT.escapeHTML(item.image || 'images/product-placeholder.svg')}" alt="${NTIT.escapeHTML(item.title)}" class="cart-item-img">
+          ${NTIT.listingImage(item.image, item.title, 'cart-item-img')}
           <div class="cart-item-details">
             <div class="cart-item-title">${NTIT.escapeHTML(item.title)}</div>
             <div class="cart-item-price">${NTIT.money(item.price * item.qty)}</div>
