@@ -1,9 +1,6 @@
 // ShopIT backend – API-rutter under /api.
 import { Router } from 'express';
 import crypto from 'node:crypto';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { mkdir } from 'node:fs/promises';
 import multer from 'multer';
 import { query, withTransaction } from './db.mjs';
 import { signToken, requireAuth, requireSameOrigin, setSessionCookie, clearSessionCookie } from './auth.mjs';
@@ -15,6 +12,10 @@ import { positiveInt, nonNegativeInt, priceValue, MAX_QUANTITY } from './validat
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CATEGORIES = ['Datorer', 'Laddare', 'Kablar', 'Skärmar', 'Switchar', 'Router'];
 const COUNTY_CODE = /^(01|0[3-9]|1[0234789]|2[0-5])$/;
+const IMAGE_EXTENSIONS = new Map([
+  ['image/jpeg', '.jpg'], ['image/png', '.png'], ['image/webp', '.webp'],
+  ['image/gif', '.gif'], ['image/svg+xml', '.svg'],
+]);
 
 export class HttpError extends Error {
   constructor(status, message) {
@@ -488,32 +489,22 @@ export function createApiRouter() {
   });
 
   // --- Image upload (file picker or mobile camera) -------------------------
-  const uploadDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'uploads');
-  const storage = multer.diskStorage({
-    // multer does not create the destination directory itself.
-    destination: (_req, _file, cb) => {
-      mkdir(uploadDir, { recursive: true }).then(() => cb(null, uploadDir), cb);
-    },
-    filename: (_req, file, cb) => {
-      const ext = (path.extname(file.originalname) || '.bin').toLowerCase().slice(0, 8);
-      cb(null, `${crypto.randomUUID()}${ext}`);
-    },
-  });
   const upload = multer({
-    storage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
-      if (/^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(file.mimetype)) cb(null, true);
+      if (IMAGE_EXTENSIONS.has(file.mimetype)) cb(null, true);
       else cb(new HttpError(415, 'Bara bildfiler (JPEG, PNG, WebP, GIF, SVG) är tillåtna.'));
     },
   });
 
-  router.post('/uploads', (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
-      if (err) return next(err);
-      if (!req.file) return next(new HttpError(400, 'Bilda en bildfil med fältnamnet "image".'));
-      res.status(201).json({ url: `/uploads/${req.file.filename}` });
-    });
+  router.post('/uploads', upload.single('image'), async (req, res) => {
+    if (!req.file?.size) throw new HttpError(400, 'Bifoga en bildfil med fältnamnet "image".');
+    const { mimetype, buffer } = req.file;
+    const filename = `${crypto.randomUUID()}${IMAGE_EXTENSIONS.get(mimetype)}`;
+    await query('INSERT INTO shopit.listing_images (filename, content_type, data) VALUES ($1, $2, $3)',
+      [filename, mimetype, buffer]);
+    res.status(201).json({ url: `/uploads/${filename}` });
   });
 
   // --- Orders: "Köp direkt" och varukorgsköp går genom samma endpoint ------

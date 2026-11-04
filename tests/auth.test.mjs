@@ -2,7 +2,7 @@ import test, { after, before, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { unlink } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
 // Never connect to the shared database. All DB calls in this file are fixtures.
@@ -21,8 +21,18 @@ const schools = [
   { id: '10000000-0000-4000-8000-000000000002', name: 'School B', contact_email: 'b@example.test' },
 ];
 const calls = [];
+const images = new Map();
 mock.method(getPool(), 'query', async (sql, params = []) => {
   calls.push({ sql, params });
+  if (sql.startsWith('INSERT INTO shopit.listing_images')) {
+    const [filename, content_type, data] = params;
+    images.set(filename, { content_type, data });
+    return { rows: [] };
+  }
+  if (sql.includes('FROM shopit.listing_images')) {
+    const image = images.get(params[0]);
+    return { rows: image ? [image] : [] };
+  }
   if (sql.includes('WHERE lower(btrim(contact_email))')) return { rows: schools.filter(s => s.contact_email === params[0].toLowerCase()) };
   if (sql.includes('FROM shopit.schools WHERE id')) {
     return { rows: schools.filter(s => s.id === params[0]).map(s => ({ ...s, county_code: sql.includes('county_code') ? s.county_code : undefined })) };
@@ -117,8 +127,9 @@ test('the verified identity determines the school, never client supplied IDs', a
 
 test('uploaded images require a session and cannot execute scripts as the viewer', async () => {
   const { cookie } = await login();
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1"/></svg>';
   const form = new FormData();
-  form.append('image', new Blob(['<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1"/></svg>'], { type: 'image/svg+xml' }), 'auth-test.svg');
+  form.append('image', new Blob([svg], { type: 'image/svg+xml' }), 'auth-test.svg');
   const uploaded = await fetch(`${base}/api/uploads`, { method: 'POST', body: form,
     headers: { Cookie: cookie, 'X-ShopIT-Request': '1' } });
   assert.equal(uploaded.status, 201);
@@ -131,9 +142,30 @@ test('uploaded images require a session and cannot execute scripts as the viewer
     assert.equal(image.headers.get('cache-control'), 'no-store');
     assert.match(image.headers.get('content-security-policy'), /sandbox/);
     assert.equal(image.headers.get('x-content-type-options'), 'nosniff');
-    await image.arrayBuffer();
+    assert.match(image.headers.get('content-type'), /^image\/svg\+xml/);
+    assert.equal(await image.text(), svg);
   } finally {
-    await unlink(new URL(`../backend${url}`, import.meta.url));
+    images.delete(url.split('/').pop());
+  }
+});
+
+test('old photo URLs still serve files left in the uploads directory', async () => {
+  const { cookie } = await login();
+  const dir = new URL('../backend/uploads/', import.meta.url);
+  const filename = `${crypto.randomUUID()}.png`;
+  const file = new URL(filename, dir);
+  const bytes = readFileSync(new URL('../images/logo.png', import.meta.url));
+  await mkdir(dir, { recursive: true });
+  await writeFile(file, bytes, { flag: 'wx' });
+  try {
+    const url = `/uploads/${filename}`;
+    assert.equal((await request(url)).status, 401);
+    const image = await request(url, { cookie });
+    assert.equal(image.status, 200);
+    assert.equal(image.headers.get('cache-control'), 'no-store');
+    assert.deepEqual(Buffer.from(await image.arrayBuffer()), bytes);
+  } finally {
+    await unlink(file);
   }
 });
 
@@ -205,7 +237,7 @@ test('weak session secrets stop startup, and HTTPS session cookies are Secure', 
 test('browser stores only school data and uses cookies, including when storage is unavailable', async () => {
   const saved = new Map();
   const fetched = [];
-  const sandbox = { window: {}, localStorage: {
+  const sandbox = { window: {}, document: { addEventListener() {} }, localStorage: {
     getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value), removeItem: key => saved.delete(key),
   }, fetch: async (url, options) => {
     fetched.push({ url, options }); return { ok: true, json: async () => ({ ok: true }) };

@@ -104,13 +104,18 @@ try {
     assert.equal(await stock(listing.id), 6);
   });
   await check('image upload persists and is protected on download', async () => {
-    const form = new FormData(); form.append('image', new Blob([await readFile(new URL('../images/logo.png', import.meta.url))], { type: 'image/png' }), 'backend-test.png');
+    const original = await readFile(new URL('../images/logo.png', import.meta.url));
+    const form = new FormData(); form.append('image', new Blob([original], { type: 'image/png' }), 'backend-test.png');
     const response = await fetch(base + '/api/uploads', { method: 'POST', headers: { Authorization: `Bearer ${seller.token}` }, body: form });
     assert.equal(response.status, 201);
-    const { url } = await response.json(); assert.match(url, /^\/uploads\/[0-9a-f-]+\.png$/); uploads.push(url);
+    const { url } = await response.json(); assert.match(url, /^\/uploads\/[0-9a-f-]+\.png$/);
+    const filename = url.split('/').pop(); uploads.push(filename);
+    const { rows } = await db.query('SELECT data FROM shopit.listing_images WHERE filename = $1', [filename]);
+    assert.deepEqual(rows[0]?.data, original);
     assert.equal((await fetch(base + url)).status, 401);
     const image = await fetch(base + url, { headers: { Authorization: `Bearer ${buyer.token}` } });
-    assert.equal(image.status, 200); assert.equal(image.headers.get('content-type'), 'image/png'); await image.arrayBuffer();
+    assert.equal(image.status, 200); assert.equal(image.headers.get('content-type'), 'image/png');
+    assert.deepEqual(Buffer.from(await image.arrayBuffer()), original);
   });
   await check('multi-seller checkout merges repeated lines and decrements stock', async () => {
     const response = await api('/orders/checkout', { method: 'POST', token: buyer.token, body: { items: [
@@ -233,8 +238,8 @@ try {
   });
 } finally {
   await new Promise(resolve => server.close(resolve));
+  if (uploads.length) await db.query('DELETE FROM shopit.listing_images WHERE filename = ANY($1)', [uploads]);
   await closePool(); await db.end();
-  for (const url of uploads) await unlink(new URL(`../backend${url}`, import.meta.url));
   const newMail = (await readdir(outbox).catch(() => [])).filter(name => !beforeMail.has(name));
   for (const file of newMail.filter(name => name.endsWith('.html'))) {
     const path = new URL(file, outbox);

@@ -3,6 +3,7 @@
 (() => {
   const SESSION_KEY = 'ntit_session';
   const API_BASE = '/api';
+  const LISTING_IMAGE_PLACEHOLDER = '/images/product-placeholder.svg';
   const CATEGORIES = ['Datorer', 'Laddare', 'Kablar', 'Skärmar', 'Switchar', 'Router'];
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   let cachedSession = null;
@@ -138,6 +139,18 @@
     })[char]);
   }
 
+  function listingImage(url, title, className, { lazy = false } = {}) {
+    return `<img data-listing-image src="${escapeHTML(url || LISTING_IMAGE_PLACEHOLDER)}" alt="${escapeHTML(title)}" class="${escapeHTML(className)}"${lazy ? ' loading="lazy"' : ''}>`;
+  }
+
+  // Image errors do not bubble, so capture them for dynamically rendered listings.
+  document.addEventListener('error', ({ target }) => {
+    if (target instanceof HTMLImageElement && target.hasAttribute('data-listing-image') &&
+        target.getAttribute('src') !== LISTING_IMAGE_PLACEHOLDER) {
+      target.src = LISTING_IMAGE_PLACEHOLDER;
+    }
+  }, true);
+
   function money(value) {
     return `${Number(value || 0).toLocaleString('sv-SE')} kr`;
   }
@@ -159,6 +172,7 @@
     api,
     uploadImage,
     escapeHTML,
+    listingImage,
     money,
     shortId,
     readCart,

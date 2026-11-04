@@ -8,7 +8,7 @@ const apiScript = readFileSync(new URL('../api.js', import.meta.url), 'utf8');
 const authScript = readFileSync(new URL('../auth.js', import.meta.url), 'utf8');
 
 function cartReader(raw) {
-  const sandbox = { window: {}, localStorage: { getItem: () => raw } };
+  const sandbox = { window: {}, document: { addEventListener() {} }, localStorage: { getItem: () => raw } };
   vm.runInNewContext(apiScript, sandbox);
   return sandbox.window.NTIT.readCart();
 }
@@ -28,6 +28,41 @@ test('valid cart quantities and decimal prices survive loading', () => {
   assert.equal(cart.length, 1);
   assert.equal(cart[0].qty, 2);
   assert.equal(cart[0].price, 123.45);
+});
+
+test('a failed listing photo switches to the existing placeholder only once', () => {
+  const placeholder = '/images/product-placeholder.svg';
+  class TestImage {
+    updates = [];
+    constructor(url, isListing) { this.url = url; this.isListing = isListing; }
+    getAttribute(name) { return name === 'src' ? this.url : null; }
+    hasAttribute(name) { return this.isListing && name === 'data-listing-image'; }
+    set src(url) { this.url = url; this.updates.push(url); }
+  }
+
+  let onError;
+  const sandbox = {
+    window: {},
+    HTMLImageElement: TestImage,
+    document: { addEventListener(type, listener, capture) {
+      assert.equal(type, 'error');
+      assert.equal(capture, true);
+      onError = listener;
+    } },
+  };
+  vm.runInNewContext(apiScript, sandbox);
+  const { listingImage } = sandbox.window.NTIT;
+  assert.match(listingImage(null, 'Laptop', 'product-img'), /src="\/images\/product-placeholder\.svg"/);
+  assert.match(listingImage('/uploads/photo.png', 'Laptop', 'product-img'), /src="\/uploads\/photo\.png"/);
+
+  const photo = new TestImage('/uploads/missing.png', true);
+  onError({ target: photo });
+  onError({ target: photo });
+  assert.deepEqual(photo.updates, [placeholder]);
+
+  const logo = new TestImage('/images/logo.png', false);
+  onError({ target: logo });
+  assert.deepEqual(logo.updates, []);
 });
 
 function sessionGuard({ protocol = 'http:', session = { token: 'test' }, status, page = 'profil.html' } = {}) {
@@ -51,7 +86,7 @@ test('opening an HTML file moves to the backend origin instead of a login/index 
   for (const page of ['login.html', 'index.html', 'profil.html']) {
     const redirects = [];
     const location = { protocol: 'file:', pathname: `/C:/ShopIt/${page}`, search: '', hash: '', replace: url => redirects.push(url) };
-    const sandbox = { window: { location }, location };
+    const sandbox = { window: { location }, document: { addEventListener() {} }, location };
     vm.runInNewContext(apiScript, sandbox);
     sandbox.NTIT = sandbox.window.NTIT;
     vm.runInNewContext(authScript, sandbox);

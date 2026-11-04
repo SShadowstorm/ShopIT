@@ -13,7 +13,7 @@ Databasen körs på **Neon**. Använd projektets befintliga `.env.local`, eller 
 
 Kontrollera anslutningen med `npm run db:status`.
 
-Kör `npm run db:upgrade` för den inkrementella migreringen `004_unique_school_email.sql`. Den förhindrar dubbla e-postadresser även vid samtidiga registreringar och kan köras igen. Befintliga dubbletter stoppar migreringen för manuell granskning; inga konton raderas. För en ny tom databas: kör först `db:migrate`, sedan `db:upgrade` och `db:seed`. Kör inte om initialschemat mot befintlig data.
+Kör `npm run db:upgrade` före driftsättning mot en befintlig databas. Uppgraderingen kan köras igen och inkluderar `006_listing_images.sql`, som skapar tabellen för uppladdade bilder. Befintliga dubbletter av skolornas e-postadresser stoppar migreringen för manuell granskning. För en ny tom databas: kör först `db:migrate`, sedan `db:upgrade` och `db:seed`.
 
 Kör sedan:
 
@@ -65,6 +65,8 @@ Kategorier: `Datorer`, `Laddare`, `Kablar`, `Skärmar`, `Switchar`, `Router` (m�
 `GET /api/listings` stöder kombinerade filter: `q` (titel/beskrivning), `category`, `city`, `location` (ort/skolnamn), `school_id`, `min_price`, `max_price`. Sortering: `sort=newest|oldest|price-asc|price-desc` (även `date-asc`, `date-desc`, `price_asc`, `price_desc`). Ogiltiga filter ger 400; alla sökvärden binds som SQL-parametrar.
 
 Antal måste vara heltal inom PostgreSQLs intervall. Pris får vara 0–9999999999,99 kr och avrundas till två decimaler. Null, booleska värden och tomma strängar godtas inte som antal/pris. För stora bilduppladdningar ger 413, felaktiga uppladdningsfält 400.
+
+Nya uppladdningar sparas i PostgreSQL och hämtas via `/uploads/...` med en giltig session. Äldre bilder kan hämtas från `backend/uploads` om filerna finns kvar. Om en äldre bildfil saknas kan annonsägaren ladda upp originalet igen via **Redigera** på befintlig annons.
 
 ### Köpflödet
 
