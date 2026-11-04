@@ -121,7 +121,7 @@
   padding: 4px;
   border: 1px solid var(--border-color);
   border-radius: 7px;
-  background: rgba(18, 28, 45, 0.72);
+  background: rgba(var(--card-rgb), 0.72);
 }
 
 .auth-tab {
@@ -155,12 +155,12 @@
   padding: 0 0.85rem;
   border: 1px solid rgba(248, 246, 240, 0.16);
   border-radius: 5px;
-  background: rgba(18, 28, 45, 0.74);
+  background: rgba(var(--card-rgb), 0.74);
   color: #9eada3;
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.auth-input-wrap:focus-within { border-color: #a9c0af; background: rgba(18, 28, 45, 0.98); }
+.auth-input-wrap:focus-within { border-color: #a9c0af; background: rgba(var(--card-rgb), 0.98); }
 .auth-input-wrap > i { width: 16px; text-align: center; }
 
 .auth-input-wrap input {
@@ -219,7 +219,7 @@
   font-size: 0.83rem;
 }
 
-.auth-message.error { border-color: rgba(239, 125, 112, 0.4); background: rgba(116, 43, 38, 0.18); color: #f0a39a; }
+.auth-message.error { border-color: rgba(239, 125, 112, 0.4); background: rgba(116, 43, 38, 0.18); color: var(--error-message-text); }
 .auth-message[hidden] { display: none; }
 .auth-legal { margin-top: 1.2rem; color: var(--text-muted); font-size: 0.79rem; }
 
@@ -253,6 +253,25 @@
 }
 
 .auth-demo-hint[hidden] { display: none; }
+
+:root[data-theme="light"] :is(.auth-eyebrow, .auth-input-wrap, .auth-local-note i) {
+  color: #36594b;
+}
+
+:root[data-theme="light"] .auth-field label { color: var(--text-main); }
+:root[data-theme="light"] .auth-local-note { color: var(--text-muted); }
+:root[data-theme="light"] .auth-input-wrap { border-color: var(--border-hover); }
+:root[data-theme="light"] .auth-input-wrap input::placeholder { color: var(--text-muted); }
+:root[data-theme="light"] .auth-message:not(.error) { color: var(--warning-color); }
+:root[data-theme="light"] :is(.auth-tab.active, .auth-submit) {
+  background: var(--accent-main);
+  border-color: var(--accent-main);
+  color: var(--accent-text);
+}
+
+@media (min-width: 681px) {
+  :root[data-theme="light"] .login-help-link { color: var(--text-main); }
+}
 
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(12px); }

@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NTI-T Shopp</title>
   <script src="api.js?v=listing-images"></script>
+  <script src="theme.js"></script>
   <script src="auth.js"></script>
   <!-- Font Awesome Ikoner -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="main.css">
   <style>
     :root {
-      --bg-glass: rgba(9, 14, 23, 0.88);
-      --header-bg: var(--bg-glass);
+      --header-bg: rgba(9, 14, 23, 0.88);
+    }
+
+    :root:not([data-theme="light"]) {
       --shadow-elevated: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
 
@@ -73,7 +76,7 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(9, 14, 23, 0.88);
+      background: rgba(var(--surface-rgb), 0.88);
       border: 1px solid var(--border-color);
       color: var(--text-main);
       padding: 0.2rem 0.6rem;
@@ -275,7 +278,7 @@
 
     .filter-toggle:hover,
     .filter-toggle[aria-expanded="true"] {
-      border-color: #60a5fa;
+      border-color: var(--info-text);
     }
 
     .filter-toggle[aria-expanded="true"] i {
@@ -285,7 +288,7 @@
     .filter-panel {
       margin-top: 1rem;
       padding: 1rem;
-      border: 1px solid #315479;
+      border: 1px solid var(--filter-border);
       border-radius: 8px;
       background: var(--bg-alt);
     }
@@ -317,7 +320,7 @@
 
     .filter-groups input:is([type="checkbox"], [type="radio"]) {
       flex: none;
-      accent-color: #60a5fa;
+      accent-color: var(--info-text);
     }
 
     .county-search {
@@ -356,7 +359,7 @@
     .filter-actions .filter-reset {
       background: transparent;
       border-color: transparent;
-      color: #93c5fd;
+      color: var(--link-text);
       text-decoration: underline;
     }
 
@@ -388,7 +391,7 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(9, 14, 23, 0.85);
+      background: rgba(var(--surface-rgb), 0.85);
       border: 1px solid var(--border-color);
       width: 32px;
       height: 32px;
@@ -404,8 +407,8 @@
     }
 
     .fav-btn:hover, .fav-btn.active {
-      color: #f87171;
-      border-color: #f87171;
+      color: var(--danger-text);
+      border-color: var(--danger-text);
     }
 
     .product-img-wrap {
@@ -484,7 +487,7 @@
     .btn-add-cart:hover {
       border-color: var(--border-hover);
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
     }
 
     /* --- DEDIKERAD PRODUKTSIDA (FULL VIEW) --- */
@@ -514,7 +517,7 @@
     .btn-back:hover {
       border-color: var(--border-hover);
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.03);
+      background: var(--soft-subtle);
     }
 
     .product-page-card {
@@ -635,7 +638,7 @@
     }
 
     .btn-page-buy-direct:hover {
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
       border-color: var(--border-hover);
     }
 
@@ -805,7 +808,7 @@
     }
 
     .cart-item-remove:hover {
-      color: #f87171;
+      color: var(--danger-text);
     }
 
     .cart-footer {
@@ -881,8 +884,8 @@
           <span class="cart-badge" id="cartBadge">0</span>
         </button>
 
-        <a href="profil.html" class="settings-btn" title="Inställningar">
-          <i class="fa-solid fa-gear"></i>
+        <a href="profil.html" class="mobile-profile-btn" aria-label="Min profil" title="Min profil">
+          <i class="fa-regular fa-user" aria-hidden="true"></i>
         </a>
       </div>
     </div>
@@ -1050,7 +1053,7 @@
 
     // NEUTRAL KATEGORIPILL
     function categoryPill(category) {
-      return `<span class="condition-pill" style="background:rgba(96,165,250,0.12); color:#60a5fa; border:1px solid rgba(96,165,250,0.3);">
+      return `<span class="condition-pill" style="background:rgba(96,165,250,0.12); color:var(--info-text); border:1px solid rgba(96,165,250,0.3);">
                 <i class="fa-solid fa-tag"></i> ${NTIT.escapeHTML(category || 'Övrigt')}
               </span>`;
     }

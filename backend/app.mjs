@@ -35,7 +35,7 @@ export function createApp() {
 
   // Only the assets needed by the login page are anonymous.
   const publicFiles = new Set([
-    '/login.html', '/login.css', '/main.css', '/api.js', '/auth.js',
+    '/login.html', '/login.css', '/main.css', '/api.js', '/auth.js', '/theme.js',
     '/images/logo.png', '/images/hero.png',
   ]);
   const protectedFiles = new Set([
