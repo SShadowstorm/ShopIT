@@ -190,7 +190,6 @@ header {
 }
 
 .settings-btn,
-.mobile-profile-btn,
 .auth-logout-btn {
   display: flex;
   align-items: center;
@@ -208,18 +207,14 @@ header {
 }
 
 .settings-btn:hover,
-.mobile-profile-btn:hover,
 .auth-logout-btn:hover {
   color: var(--header-text);
   border-color: var(--header-border-hover);
 }
 
-.mobile-profile-btn {
-  display: none;
-}
-
 .theme-settings {
   position: relative;
+  --bubble-overhang: 0.65rem;
 }
 
 .settings-btn::-webkit-details-marker {
@@ -235,12 +230,12 @@ header {
 .theme-panel {
   position: absolute;
   z-index: 1;
-  top: calc(100% + 0.65rem);
-  right: 0;
+  top: calc(100% + 0.8rem);
+  right: calc(-1 * var(--bubble-overhang));
   width: min(17.5rem, calc(100vw - 5rem));
   padding: 1rem;
   border: 1px solid var(--border-hover);
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--bg-card);
   box-shadow: var(--shadow-elevated);
   color: var(--text-main);
@@ -248,10 +243,10 @@ header {
 
 .theme-panel::before {
   position: absolute;
-  top: -0.3rem;
-  right: 0.85rem;
-  width: 0.5rem;
-  height: 0.5rem;
+  top: -0.35rem;
+  right: calc(19px + var(--bubble-overhang) - 0.35rem);
+  width: 0.7rem;
+  height: 0.7rem;
   border-top: 1px solid var(--border-hover);
   border-left: 1px solid var(--border-hover);
   background: inherit;
@@ -266,17 +261,22 @@ header {
 
 .theme-panel fieldset {
   border: 0;
+  min-inline-size: 0;
 }
 
 .theme-panel legend {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.45rem;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 
 .theme-options {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.35rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
 }
 
 .theme-options label {
@@ -297,14 +297,15 @@ header {
   justify-content: center;
   gap: 0.4rem;
   min-height: 42px;
-  border: 1px solid var(--border-hover);
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
   font-size: 0.875rem;
 }
 
 .theme-options input:checked + span {
   border-color: var(--accent-blue);
-  background: rgba(59, 130, 246, 0.15);
+  background: #d3e4fc;
+  color: #172235;
   font-weight: 700;
 }
 
@@ -349,10 +350,6 @@ header {
 
   .header-actions {
     gap: 0.5rem;
-  }
-
-  .mobile-profile-btn {
-    display: flex;
   }
 }
 
