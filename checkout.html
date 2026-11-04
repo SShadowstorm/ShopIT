@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kassan - NTI-T Shopp</title>
   <script src="api.js"></script>
+  <script src="theme.js"></script>
   <script src="auth.js"></script>
   <!-- Font Awesome Ikoner -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +13,7 @@
   <style>
     /* --- PAGE HERO BANNER --- */
     .page-hero {
-      background: linear-gradient(180deg, rgba(13, 21, 34, 0.92) 0%, rgba(9, 14, 23, 0.98) 100%), url('images/hero.png') center/cover no-repeat;
+      background: linear-gradient(180deg, rgba(var(--hero-top-rgb), 0.92) 0%, rgba(var(--surface-rgb), 0.98) 100%), url('images/hero.png') center/cover no-repeat;
       border-bottom: 1px solid var(--border-color);
       padding: 3.5rem 1.5rem;
     }
@@ -33,7 +34,7 @@
 
     .page-hero h1 {
       font-size: 1.9rem;
-      color: #ffffff;
+      color: var(--hero-heading);
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -104,7 +105,7 @@
 
     input:focus, textarea:focus {
       border-color: var(--border-hover);
-      box-shadow: 0 0 0 3px rgba(248, 246, 240, 0.05);
+      box-shadow: 0 0 0 3px var(--soft-hover);
     }
 
     textarea { resize: vertical; min-height: 80px; }
@@ -177,13 +178,13 @@
       padding: 0.75rem 0.9rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      background: rgba(248, 246, 240, 0.03);
+      background: var(--soft-subtle);
       color: var(--text-muted);
       font-size: 0.82rem;
       line-height: 1.5;
     }
 
-    .form-note i { margin-top: 0.2rem; color: #60a5fa; }
+    .form-note i { margin-top: 0.2rem; color: var(--info-text); }
 
     .order-error {
       margin: 1rem 0 0;
@@ -191,7 +192,7 @@
       border: 1px solid rgba(239, 125, 112, 0.4);
       border-radius: 8px;
       background: rgba(116, 43, 38, 0.18);
-      color: #f0a39a;
+      color: var(--error-message-text);
       font-size: 0.85rem;
     }
 
@@ -248,7 +249,7 @@
     .btn-secondary:hover {
       border-color: var(--border-hover);
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
     }
 
     /* --- EMPTY STATE --- */
@@ -444,8 +445,8 @@
       </nav>
 
       <div class="header-actions">
-        <a href="profil.html" class="settings-btn" title="Min profil">
-          <i class="fa-solid fa-user"></i>
+        <a href="profil.html" class="mobile-profile-btn" aria-label="Min profil" title="Min profil">
+          <i class="fa-regular fa-user" aria-hidden="true"></i>
         </a>
       </div>
     </div>

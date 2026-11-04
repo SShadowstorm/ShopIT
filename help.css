@@ -1,9 +1,14 @@
 .help-page {
   --header-bg: rgba(9, 14, 23, 0.88);
+  --help-hero-opacity: 0.72;
+}
+
+:root[data-theme="light"] .help-page {
+  --help-hero-opacity: 0.87;
 }
 
 .help-hero {
-  background: linear-gradient(90deg, rgba(9, 14, 23, 0.94), rgba(9, 14, 23, 0.72)), url('images/hero.png') center/cover no-repeat;
+  background: linear-gradient(90deg, rgba(var(--surface-rgb), 0.94), rgba(var(--surface-rgb), var(--help-hero-opacity))), url('images/hero.png') center/cover no-repeat;
   border-bottom: 1px solid var(--border-color);
   padding: 4rem 1.5rem 3.75rem;
 }
@@ -53,7 +58,7 @@
   padding: 0.85rem 1rem;
   border: 1px solid var(--border-hover);
   border-radius: 8px;
-  background: rgba(18, 28, 45, 0.92);
+  background: rgba(var(--card-rgb), 0.92);
   color: var(--text-muted);
 }
 
@@ -107,7 +112,7 @@
 }
 
 .help-nav a:hover {
-  background: rgba(248, 246, 240, 0.06);
+  background: var(--soft-hover);
   color: var(--text-main);
 }
 
@@ -223,7 +228,7 @@
   margin-top: 1.2rem;
   padding: 1rem 1.1rem;
   border-left: 3px solid #91a899;
-  background: rgba(18, 28, 45, 0.75);
+  background: rgba(var(--card-rgb), 0.75);
   color: var(--text-muted);
   font-size: 0.86rem;
 }
@@ -294,6 +299,17 @@
 }
 
 .help-footer-note a:hover { color: #c5d8cb; }
+
+:root[data-theme="light"] :is(.help-kicker, .help-nav i, .help-section-icon, .guide-note i) {
+  color: #36594b;
+}
+
+:root[data-theme="light"] .help-hero p { color: var(--text-muted); }
+:root[data-theme="light"] .faq-item summary::after { color: var(--text-muted); }
+:root[data-theme="light"] :is(.faq-answer a, .guide-copy a, .help-footer-note a:hover) { color: var(--link-text); }
+:root[data-theme="light"] .condition-good .condition-score { color: var(--success-color); }
+:root[data-theme="light"] .condition-mid .condition-score { color: var(--warning-color); }
+:root[data-theme="light"] .condition-low .condition-score { color: var(--danger-color); }
 
 @media (max-width: 820px) {
   .help-hero-inner { grid-template-columns: 1fr; gap: 1.5rem; }

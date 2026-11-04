@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Min Profil - NTI-T Shopp</title>
   <script src="api.js?v=listing-images"></script>
+  <script src="theme.js"></script>
   <script src="auth.js"></script>
   <!-- Font Awesome Ikoner -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +13,7 @@
   <style>
     /* --- PROFIL HERO --- */
     .profile-hero {
-      background: linear-gradient(180deg, rgba(13, 21, 34, 0.92) 0%, rgba(9, 14, 23, 0.98) 100%), url('images/hero.png') center/cover no-repeat;
+      background: linear-gradient(180deg, rgba(var(--hero-top-rgb), 0.92) 0%, rgba(var(--surface-rgb), 0.98) 100%), url('images/hero.png') center/cover no-repeat;
       border-bottom: 1px solid var(--border-color);
       padding: 3.5rem 1.5rem 0; /* 0 i botten så statistik-dockan sitter ihop med kanten */
       position: relative;
@@ -56,7 +57,7 @@
 
     .profile-title h1 {
       font-size: 1.9rem;
-      color: #ffffff;
+      color: var(--hero-heading);
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -95,7 +96,7 @@
     /* --- INTEGRERAD DOCKAD STATISTIK (SITTER FAST I KANTEN) --- */
     .stats-dock {
       width: 100%;
-      background: rgba(18, 28, 45, 0.55);
+      background: rgba(var(--card-rgb), 0.55);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
@@ -120,15 +121,15 @@
     }
 
     .stat-dock-item:hover {
-      background: rgba(248, 246, 240, 0.03);
+      background: var(--soft-subtle);
     }
 
     .stat-dock-icon {
       width: 44px;
       height: 44px;
       border-radius: 10px;
-      background: rgba(248, 246, 240, 0.05);
-      border: 1px solid rgba(248, 246, 240, 0.1);
+      background: var(--soft-hover);
+      border: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -285,7 +286,7 @@
 
     .form-input:focus {
       border-color: var(--border-hover);
-      box-shadow: 0 0 0 3px rgba(248, 246, 240, 0.05);
+      box-shadow: 0 0 0 3px var(--soft-hover);
     }
 
     .btn-save-info {
@@ -347,7 +348,7 @@
       padding: 0.75rem 0.9rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      background: rgba(248, 246, 240, 0.03);
+      background: var(--soft-subtle);
       color: var(--text-muted);
       font-size: 0.85rem;
       line-height: 1.5;
@@ -358,7 +359,7 @@
 
     .info-note i {
       margin-top: 0.2rem;
-      color: #60a5fa;
+      color: var(--info-text);
     }
 
 
@@ -489,7 +490,7 @@
     .btn-listing-action:hover {
       border-color: var(--border-hover);
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
     }
 
     .btn-listing-action.delete {
@@ -613,7 +614,7 @@
     }
 
     .inventory-table th {
-      background: rgba(9, 14, 23, 0.7);
+      background: rgba(var(--surface-rgb), 0.7);
       color: var(--text-muted);
       font-weight: 600;
       padding: 0.85rem 0.8rem;
@@ -640,7 +641,7 @@
     }
 
     .inventory-table tbody tr:hover {
-      background-color: rgba(248, 246, 240, 0.02);
+      background-color: var(--soft-subtle);
     }
 
     .serial-code {
@@ -662,7 +663,7 @@
     }
 
     .badge-in-use {
-      color: #60a5fa;
+      color: var(--info-text);
       background: rgba(59, 130, 246, 0.12);
       border: 1px solid rgba(59, 130, 246, 0.3);
     }
@@ -752,7 +753,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(9, 14, 23, 0.8);
+      background: rgba(var(--surface-rgb), 0.8);
     }
 
     .modal-header h3 {
@@ -782,7 +783,7 @@
 
     .close-modal-btn:hover {
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.08);
+      background: var(--soft-hover);
     }
 
     .modal-body {
@@ -801,7 +802,7 @@
       padding: 1.75rem 1rem;
       text-align: center;
       cursor: pointer;
-      background: rgba(9, 14, 23, 0.5);
+      background: rgba(var(--surface-rgb), 0.5);
       transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
@@ -813,7 +814,7 @@
 
     .file-upload-zone:hover, .file-upload-zone.dragover {
       border-color: var(--accent-main);
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
       transform: translateY(-1px);
     }
 
@@ -857,9 +858,9 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(9, 14, 23, 0.85);
+      background: rgba(var(--surface-rgb), 0.85);
       border: 1px solid var(--border-color);
-      color: #f87171;
+      color: var(--danger-text);
       width: 32px;
       height: 32px;
       border-radius: 8px;
@@ -880,7 +881,7 @@
     .modal-footer {
       padding: 1.25rem 1.8rem;
       border-top: 1px solid var(--border-color);
-      background: rgba(9, 14, 23, 0.8);
+      background: rgba(var(--surface-rgb), 0.8);
       display: flex;
       justify-content: flex-end;
       gap: 0.8rem;
@@ -901,7 +902,7 @@
     .btn-secondary:hover {
       border-color: var(--border-hover);
       color: var(--text-main);
-      background: rgba(248, 246, 240, 0.05);
+      background: var(--soft-hover);
     }
 
     .btn-primary {
@@ -1076,7 +1077,7 @@
     }
 
     .cart-item-remove:hover {
-      color: #f87171;
+      color: var(--danger-text);
     }
 
     .cart-footer {
@@ -1158,8 +1159,8 @@
           <span class="cart-badge" id="cartBadge">0</span>
         </button>
 
-        <a href="profil.html" class="settings-btn" title="Inställningar">
-          <i class="fa-solid fa-gear"></i>
+        <a href="profil.html" class="mobile-profile-btn" aria-label="Min profil" title="Min profil">
+          <i class="fa-regular fa-user" aria-hidden="true"></i>
         </a>
       </div>
     </div>
